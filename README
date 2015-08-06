@@ -1,0 +1,57 @@
+This directory, SubmitArea13_TeV, needs to be located
+in the same directory as CMSSW_X_Y_Z that contains
+the compiled analyzer you want to run
+
+Before submitting jobs, you should get a grid certificate
+by running from a CMSSW area:
+
+voms-proxy-init -voms cms
+
+Then look in /tmp and find the most recent file like
+x590up_uXXXXX. Copy this file to your home directory, 
+and then change one line in submitFile.pbs.sh to pick
+it up:
+
+export X509_USER_PROXY=/scratch/osg/dsperka/x509up_u130024
+
+Now you can run on files using XRootD even if they are
+not available locally on the Florida T2. The submit 
+script will still prefer local files if they are 
+available.
+
+To submit Data and MC, use the template submitDataMC.sh 
+on the hpc:
+
+./submitDataMC.sh
+
+This calls the SubmitAnalyzer.py script, which uses a list
+of datasets in a text file to get the list of filenames
+from DAS using a command line query. It then builds the
+cfg files from template cfg files. Also, the list of 
+datasets includes a field to put the cross section for MC.
+For data, you can also use a JSON file (it is defined in
+the template, i.e. templateData_74X_cfg.py). 
+
+If jobs have failed, you can build a list of the failed
+jobs and put them in a file called resubmit.txt and 
+rerun the SubmitAnalyzer.py script with the same options
+but adding --resubmit. It will then resubmit only the 
+failed jobs.
+
+After the jobs have finished, you can merge the outputs
+using the hadd.py script. First make a folder where you 
+want to keep the merged outputs, e.g. rootfiles_MC_XXXX 
+If your results are in a folder called results_MC_XXXX,
+you can call the script like:
+
+python hadd.py -i results_MC_XXXX -o rootfiles_MC_XXXX 
+
+You can do the same thing for data files. Additionally
+for data, you may want to combine different datasets and 
+remove duplicate events. You can do this by doing:
+
+root -l -q -b removeDuplicates.C
+
+Just change the name of the input file inside the script.
+
+
