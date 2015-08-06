@@ -1,4 +1,4 @@
-This directory, SubmitArea13_TeV, needs to be located
+This directory, SubmitArea_13TeV, needs to be located
 in the same directory as CMSSW_X_Y_Z that contains
 the compiled analyzer you want to run
 
