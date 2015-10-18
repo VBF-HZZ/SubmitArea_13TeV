@@ -172,7 +172,7 @@ def submitAnalyzer():
             cmd = 'qsub -o '+outFilesDir+'/'+jobName+'.out -e '+errFilesDir+'/'+jobName+'.err -v jobName='+jobName+',curDir='+currentDir+',outDir='+outDir+',cfgFile='+cfgfile+' -N \"'+jobName+'\" submitFileAna.pbs.sh' 
             #print cmd 
 
-            #output = processCmd(cmd) 
+            output = processCmd(cmd) 
             while ('error' in output): 
                 time.sleep(1.0); 
                 output = processCmd(cmd) 
