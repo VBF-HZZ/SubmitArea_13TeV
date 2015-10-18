@@ -3,7 +3,11 @@
 
 void removeDuplicates() {
 
-    TString filename = "rootfiles_Data_20150729/Data_Run2015B-PromptReco-v1.root";
+    //TString filename = "rootfiles_Data_20150729/Data_Run2015B-PromptReco-v1.root";
+    //TString filename = "rootfiles_Data_20151006/Data_Run2015D-PromptReco-v3.root";
+    //TString filename = "rootfiles_Data_20151006/Data_Run2015C-23Sep2015-v1.root";
+    TString filename = "rootfiles_Data_20151014/Data_Run2015D_new.root";
+
     std::cout<<filename<<std::endl;
 
     TFile *oldfile = new TFile(filename);

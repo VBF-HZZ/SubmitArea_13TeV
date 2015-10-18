@@ -49,7 +49,7 @@ def submitAnalyzer():
     currentDir = os.getcwd()
 
     tag = opt.TAG+'_'+time.strftime("%Y%m%d")
-    outDir='results_'+tag 
+    outDir='resultsAna_'+tag 
 
     if (not os.path.isdir(outDir)):
         cmd = 'mkdir '+outDir
@@ -61,12 +61,12 @@ def submitAnalyzer():
     #        print 'Directory '+outDir+' already exists. Exiting...'
     #        sys.exit()
 
-    outFilesDir = 'outFiles_'+tag
+    outFilesDir = 'outFilesAna_'+tag
     if not os.path.isdir(outFilesDir):
         cmd = 'mkdir '+outFilesDir
         processCmd(cmd)
 
-    errFilesDir = 'errFiles_'+tag
+    errFilesDir = 'errFilesAna_'+tag
     if not os.path.isdir(errFilesDir):
         cmd = 'mkdir '+errFilesDir
         processCmd(cmd)
@@ -84,11 +84,17 @@ def submitAnalyzer():
 
             if (line.startswith('#')): continue
 
+            #if (not 'WZTo2L2Q' in line): continue
+            #if (not 'ZZ' in line): continue
+            #if ('2L2Q' in line): continue
+            #if ('2L2Nu' in line): continue
+            #if (not '2015C' in line): continue
+
             dataset = line.split()[0]
             dataset = dataset.rstrip()
             dataset = dataset.lstrip()
-            datasets.append(dataset)
 
+            datasets.append(dataset)
             cross_section[dataset] = float(line.split()[1])
 
             cmd = './das_client.py --query="file dataset='+dataset+'" --limit=0 | grep ".root"'
@@ -143,7 +149,7 @@ def submitAnalyzer():
                 if ((f+1)>nfiles[dataset]): continue
                 filelist += '"'
                 if (os.path.isfile('/cms/data'+datasetfiles[dataset][f])):
-                    filelist += '/cms/data'
+                    filelist += 'file:/cms/data'
                 filelist += datasetfiles[dataset][f]
                 filelist += '",'
             filelist = filelist.rstrip(',')
@@ -158,16 +164,20 @@ def submitAnalyzer():
             cmd  = "sed -i 's~DUMMYCROSSSECTION~"+str(cross_section[dataset])+"~g' "+outDir+'/cfg/'+cfgfile
             output = processCmd(cmd)
 
+            if ('PromptReco-v4' in cfgfile):
+                cmd = "sed -i 's~\"PAT\"~\"RECO\"~g' "+outDir+'/cfg/'+cfgfile
+                output = processCmd(cmd)
+
             jobName = filename             
-            cmd = 'qsub -o '+outFilesDir+'/'+jobName+'.out -e '+errFilesDir+'/'+jobName+'.err -v jobName='+jobName+',curDir='+currentDir+',outDir='+outDir+',cfgFile='+cfgfile+' -N \"'+jobName+'\" submitFile.pbs.sh' 
+            cmd = 'qsub -o '+outFilesDir+'/'+jobName+'.out -e '+errFilesDir+'/'+jobName+'.err -v jobName='+jobName+',curDir='+currentDir+',outDir='+outDir+',cfgFile='+cfgfile+' -N \"'+jobName+'\" submitFileAna.pbs.sh' 
             #print cmd 
 
-            output = processCmd(cmd) 
+            #output = processCmd(cmd) 
             while ('error' in output): 
                 time.sleep(1.0); 
                 output = processCmd(cmd) 
                 if ('error' not in output):
-                    print 'Submitted after retry - job for observable '+str(observable) 
+                    print 'Submitted after retry - job for observable '+str(jobCount+1) 
 
             jobCount += 1 
     
