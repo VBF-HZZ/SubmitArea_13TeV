@@ -86,13 +86,12 @@ def submitAnalyzer():
 
             #if (not 'WZTo2L2Q' in line): continue
             #if (not line.startswith('/ZZTo4L')): continue
-            #if (not line.startswith('/ttH')): continue
             #if (not line.startswith('/GluGluHToZZTo4L_M125')): continue
             #if (not (("GluGlu" in line) or ("ZZTo4L" in line) or ("ttH" in line) or ("Wplus" in line) or ("Wminus" in line) or ("VBF" in line))): continue
             #if (not 'GluGlu' in line): continue
             #if ('2L2Q' in line): continue
             #if ('2L2Nu' in line): continue
-            if (not '2015C_25ns' in line): continue
+            #if (not '2015C' in line): continue
             #if (not 'MCRUN2_74' in line): continue
 
             dataset = line.split()[0]
@@ -143,52 +142,55 @@ def submitAnalyzer():
 
             print 'Submitting job '+str(job)+' out of '+str(njobs)+' for dataset '+dataset
 
-            cfgfile = dataset.lstrip('/')
-            cfgfile = cfgfile.replace('/','_')+'_'+str(job)+'.py'
+            nsubjobs = 6
+            for subjob in range(1,nsubjobs+1):
+                cfgfile = dataset.lstrip('/')
+                cfgfile = cfgfile.replace('/','_')+'_'+str(job)+'_'+str(subjob)+'.py'
 
-            cmd = 'cp '+cfgtemplate+' '+outDir+'/cfg/'+cfgfile
-            output = processCmd(cmd)
-
-            filelist = ''
-            for f in range((job-1)*filesperjob,job*filesperjob):
-                if ((f+1)>nfiles[dataset]): continue
-                filelist += '"'
-                if (os.path.isfile('/cms/data'+datasetfiles[dataset][f])):
-                    filelist += 'file:/cms/data'
-                filelist += datasetfiles[dataset][f]
-                filelist += '",'
-            filelist = filelist.rstrip(',')
-
-            cmd = "sed -i 's~DUMMYFILELIST~"+filelist+"~g' "+outDir+'/cfg/'+cfgfile
-            output = processCmd(cmd)
-
-            filename = dataset.split('/')[1]+'_'+dataset.split('/')[2]+'_'+str(job)
-            cmd  = "sed -i 's~DUMMYFILENAME~"+filename+"~g' "+outDir+'/cfg/'+cfgfile
-            output = processCmd(cmd)
-
-            cmd  = "sed -i 's~DUMMYCROSSSECTION~"+str(cross_section[dataset])+"~g' "+outDir+'/cfg/'+cfgfile
-            output = processCmd(cmd)
-
-            if (('PromptReco-v4' in cfgfile) or ('Run2015C_25ns' in cfgfile)):
-                cmd = "sed -i 's~\"PAT\"~\"RECO\"~g' "+outDir+'/cfg/'+cfgfile
+                cmd = 'cp '+cfgtemplate+' '+outDir+'/cfg/'+cfgfile
                 output = processCmd(cmd)
 
-            if (('MCRUN2_74' in cfgfile)):
-                cmd = "sed -i 's~slimmedAddPileupInfo~addPileupInfo~g' "+outDir+'/cfg/'+cfgfile
+                filelist = ''
+                for f in range((job-1)*filesperjob+(subjob-1)*filesperjob/nsubjobs,(job-1)*filesperjob+subjob*filesperjob/nsubjobs):
+                    if ((f+1)>nfiles[dataset]): continue
+                    filelist += '"'
+                    if (os.path.isfile('/cms/data'+datasetfiles[dataset][f])):
+                        filelist += 'file:/cms/data'
+                    filelist += datasetfiles[dataset][f]
+                    filelist += '",'
+                filelist = filelist.rstrip(',')
+                if filelist == '': continue
+
+                cmd = "sed -i 's~DUMMYFILELIST~"+filelist+"~g' "+outDir+'/cfg/'+cfgfile
+                output = processCmd(cmd)
+                
+                filename = dataset.split('/')[1]+'_'+dataset.split('/')[2]+'_'+str(job)+'_'+str(subjob)
+                cmd  = "sed -i 's~DUMMYFILENAME~"+filename+"~g' "+outDir+'/cfg/'+cfgfile
                 output = processCmd(cmd)
 
-            jobName = filename             
-            cmd = 'qsub -o '+outFilesDir+'/'+jobName+'.out -e '+errFilesDir+'/'+jobName+'.err -v jobName='+jobName+',curDir='+currentDir+',outDir='+outDir+',cfgFile='+cfgfile+' -N \"'+jobName+'\" submitFileAna.pbs.sh' 
+                cmd  = "sed -i 's~DUMMYCROSSSECTION~"+str(cross_section[dataset])+"~g' "+outDir+'/cfg/'+cfgfile
+                output = processCmd(cmd)
+
+                if (('PromptReco-v4' in cfgfile) or ('Run2015C_25ns' in cfgfile)):
+                    cmd = "sed -i 's~\"PAT\"~\"RECO\"~g' "+outDir+'/cfg/'+cfgfile
+                    output = processCmd(cmd)
+
+                if (('MCRUN2_74' in cfgfile)):
+                    cmd = "sed -i 's~slimmedAddPileupInfo~addPileupInfo~g' "+outDir+'/cfg/'+cfgfile
+                    output = processCmd(cmd)
+                    
+                jobName = filename             
+                cmd = 'qsub -o '+outFilesDir+'/'+jobName+'.out -e '+errFilesDir+'/'+jobName+'.err -v jobName='+jobName+',curDir='+currentDir+',outDir='+outDir+',cfgFile='+cfgfile+' -N \"'+jobName+'\" submitFileAna.pbs.sh' 
             #print cmd 
 
-            output = processCmd(cmd) 
-            while ('error' in output): 
-                time.sleep(1.0); 
                 output = processCmd(cmd) 
-                if ('error' not in output):
-                    print 'Submitted after retry - job for observable '+str(jobCount+1) 
+                while ('error' in output): 
+                    time.sleep(1.0); 
+                    output = processCmd(cmd) 
+                    if ('error' not in output):
+                        print 'Submitted after retry - job for observable '+str(jobCount+1) 
 
-            jobCount += 1 
+                jobCount += 1 
     
     print '[Submitted '+str(jobCount)+' jobs]'  
 

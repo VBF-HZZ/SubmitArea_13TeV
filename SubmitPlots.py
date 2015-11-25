@@ -63,11 +63,24 @@ def submitPlots():
     jobCount=0
 
     variables = ['massZ_2e','massZ_2mu',
-                 'ptlep1_2e','ptlep1_2mu','etalep1_2e','etalep1_2mu','isolep1_2e','isolep1_2mu','siplep1_2e','siplep1_2mu','mvalep1_2e',
-                 'ptlep2_2e','ptlep2_2mu','etalep2_2e','etalep2_2mu','isolep2_2e','isolep2_2mu','siplep2_2e','siplep2_2mu','mvalep2_2e',
-                 'njets_2e','njets_2mu','njets_emu','met_2e','met_2mu','met_emu',
-                 'nVtx_2e','nVtx_2mu'#,'nVtx_rw_2e','nVtx_rw_2mu'
-                 ]
+                 'ptlep1_2e','ptlep1_2mu','etalep1_2e','etalep1_2mu',
+                 'ptlep2_2e','ptlep2_2mu','etalep2_2e','etalep2_2mu',
+                 'isolep1_2e','isolep1_2mu',
+                 'isolep2_2e','isolep2_2mu',
+                 'siplep1_2e','siplep1_2mu',
+                 'siplep2_2e','siplep2_2mu',
+                 'mvalep1_2e','mvalep2_2e',
+                 'njets_2e','njets_2mu','njets_emu',
+                 'ptjet1_2e','ptjet1_2mu','ptjet1_emu',
+                 'etajet1_2e','etajet1_2mu','etajet1_emu',
+                 'njets2p5_2e','njets2p5_2mu','njets2p5_emu',
+                 'met_2e','met_2mu','met_emu',
+                 'nVtx_2e','nVtx_2mu',#'nVtx_rw_2e','nVtx_rw_2mu'   
+                 'allfsrPhotons_dR_2e','allfsrPhotons_dR_2mu',
+                 'allfsrPhotons_iso_2e','allfsrPhotons_iso_2mu',
+                 'allfsrPhotons_pt_2e','allfsrPhotons_pt_2mu',
+                 'allfsrPhotons_dROpt2_2e','allfsrPhotons_dROpt2_2mu',
+              ]
 
 
     job = 0

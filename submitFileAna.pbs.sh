@@ -9,9 +9,9 @@
              
 ##Job Configuration                                        
 ##Job Resources                                                     
-#PBS -l walltime=09:00:00 
+#PBS -l walltime=5:59:00 
 #PBS -l nodes=1:ppn=1                                                  
-#PBS -l pmem=8gb 
+#PBS -l pmem=4gb 
 
 ##Create Work Area
 CMSSWVER=CMSSW_7_4_12_patch2
