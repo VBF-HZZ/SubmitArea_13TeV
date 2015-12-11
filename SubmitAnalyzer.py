@@ -92,7 +92,7 @@ def submitAnalyzer():
             #if (not 'GluGlu' in line): continue
             #if ('2L2Q' in line): continue
             #if ('2L2Nu' in line): continue
-            if (not '2015C_25ns' in line): continue
+            #if (not '2015C_25ns' in line): continue
             #if (not 'MCRUN2_74' in line): continue
 
             dataset = line.split()[0]
